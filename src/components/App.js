@@ -1,29 +1,32 @@
-import React, { useState } from "react";
-import { Route, Switch } from "react-router-dom";
-import Home from "./Home";
-import About from "./About";
-import Login from "./Login";
-import Navbar from "./Navbar";
+import { useState, useEffect } from "react";
+import { Outlet, Navigate, useNavigate } from "react-router-dom";
+import NavBar from "./components/NavBar";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  const login = () => {
+    setIsLoggedIn(true);
+  }
+
+  const logout = () => {
+    setIsLoggedIn(false);
+  }
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/");
+    } else {
+      navigate("/login");
+    }
+  }, [isLoggedIn, navigate]); // Include navigate as a dependency
 
   return (
-    <div>
-      <Navbar setIsLoggedIn={setIsLoggedIn} />
-      <Switch>
-        <Route exact path="/about">
-          <About />
-        </Route>
-        <Route exact path="/login">
-          <Login setIsLoggedIn={setIsLoggedIn} />
-        </Route>
-        <Route exact path="/">
-          <Home isLoggedIn={isLoggedIn} />
-        </Route>
-      </Switch>
+    <div className="app">
+      {isLoggedIn ? <NavBar logout={logout} /> : <Navigate to="/login" />}
+      <Outlet context={login} />
     </div>
   );
 }
-
 export default App;
